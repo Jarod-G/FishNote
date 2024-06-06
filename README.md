@@ -1,5 +1,3 @@
-# fishnote
+# FishNote
 
 An Application for fishermen.
-
-## Getting Started
