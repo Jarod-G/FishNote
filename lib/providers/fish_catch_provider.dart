@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
-import '../models/fish_catch.dart'; // Importer FishCatch depuis models/fish_catch.dart
+import '../models/fish_catch.dart';
 
 class FishCatchProvider with ChangeNotifier {
   List<FishCatch> _fishCatches = [];
@@ -10,7 +9,26 @@ class FishCatchProvider with ChangeNotifier {
   List<FishCatch> get fishCatches => _fishCatches;
 
   FishCatchProvider() {
-    _loadFishCatches();
+    _firstLaunchSetup();
+  }
+
+  Future<void> _firstLaunchSetup() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+
+    if (isFirstLaunch) {
+      await _clearSavedData();
+      prefs.setBool('isFirstLaunch', false);
+    }
+
+    await _loadFishCatches();
+  }
+
+  Future<void> _clearSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    _fishCatches.clear();
+    notifyListeners();
   }
 
   Future<void> addFishCatch(FishCatch fishCatch) async {

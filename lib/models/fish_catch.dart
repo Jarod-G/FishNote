@@ -7,6 +7,7 @@ class FishCatch {
   final double length;
   final DateTime date;
   final String imagePath;
+  final String weather;
 
   FishCatch({
     required this.id,
@@ -16,6 +17,7 @@ class FishCatch {
     required this.length,
     required this.date,
     required this.imagePath,
+    required this.weather,
   });
 
   Map<String, dynamic> toJson() => {
@@ -26,6 +28,7 @@ class FishCatch {
     'length': length,
     'date': date.toIso8601String(),
     'imagePath': imagePath,
+    'weather' : weather,
   };
 
   factory FishCatch.fromJson(Map<String, dynamic> json) => FishCatch(
@@ -36,5 +39,6 @@ class FishCatch {
     length: json['length'],
     date: DateTime.parse(json['date']),
     imagePath: json['imagePath'],
+    weather: json['weather'],
   );
 }

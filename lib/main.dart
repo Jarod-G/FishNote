@@ -1,4 +1,4 @@
-import 'package:FishNote/themes/customTheme.dart';
+import 'package:fish_note/themes/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/fish_catch_provider.dart';

@@ -1,37 +1,80 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importer le package intl
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:intl/intl.dart';
 import '../models/fish_catch.dart';
 
 class FishDetailsScreen extends StatelessWidget {
   final FishCatch fishCatch;
 
-  const FishDetailsScreen(this.fishCatch, {Key? key}) : super(key: key);
+  const FishDetailsScreen(this.fishCatch, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat('dd/MM/yyyy à HH:mm'); // Définir le format de date
+    final DateFormat dateFormat = DateFormat('dd/MM/yyyy à HH:mm');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Détails du poisson'), // Titre plus descriptif
+        title: const Text('Détails du FISH'),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new),
+              onPressed: () {
+                Navigator.of(context).pop();
+                },
+            );
+          },
+        )
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoBox(
-              title: fishCatch.nickname.toUpperCase(), // Nom de l'espèce en majuscules et en gros
-              subtitle: '${fishCatch.species} \nPoids: ${fishCatch.weight} kg \nTaille: ${fishCatch.length} cm\nDate: ${dateFormat.format(fishCatch.date)}',
-            ),
-            const SizedBox(height: 20), // Espacement accru pour une meilleure séparation visuelle
-            if (fishCatch.imagePath != null) // Gérer un chemin d'image potentiellement nul
-              _buildImageBox(
-                imagePath: fishCatch.imagePath!,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoBox(
+                title: fishCatch.nickname.toUpperCase(),
+                subtitle: '${fishCatch.species} \nPoids: ${fishCatch.weight} kg \nTaille: ${fishCatch.length} cm\nDate: ${dateFormat.format(fishCatch.date)}\nMétéo: ${fishCatch.weather}',
               ),
-          ],
+              const SizedBox(height: 20),
+
+              Stack(
+                children: [
+
+                  // IMAGE FISH
+                  _buildImageBox(
+                    imagePath: fishCatch.imagePath,
+                  ),
+
+                  // BUTTON DOWNLOAD ON GALLERY
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black, backgroundColor: Colors.transparent,
+                      padding: EdgeInsets.zero,
+                      shape: const CircleBorder(),
+
+                    ),
+                    onPressed: () async {
+                      // SAVE IMAGE IN GALLERY
+                      final bool? result = await GallerySaver.saveImage(fishCatch.imagePath);
+                      if (result == true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Image enregistrée dans la galerie')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Erreur lors de l\'enregistrement de l\'image')),
+                        );
+                      }
+                    },
+                    child: const Icon(Icons.download, color: Colors.black, size: 40,),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -48,7 +91,7 @@ class FishDetailsScreen extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -58,16 +101,16 @@ class FishDetailsScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 24, // Taille de police plus grande pour le nom de l'espèce
+            style: const TextStyle(
+              fontSize: 26,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 16,
+            style: const TextStyle(
+              fontSize: 18,
               color: Colors.grey,
             ),
           ),
@@ -85,7 +128,7 @@ class FishDetailsScreen extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3),
           ),
         ],
       ),
